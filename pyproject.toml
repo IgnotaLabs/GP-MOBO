@@ -7,12 +7,17 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-numpy = "^2.1.2"
+numpy = "1.26.4"
 pandas = "^2.2.3"
 matplotlib = "^3.9.2"
 rdkit = "2023.9.4"
 scipy = "^1.14.1"
 networkx = "^3.3"
+fuzzywuzzy = "^0.18.0"
+requests = "^2.32.3"
+tqdm = "^4.66.5"
+scikit-learn = "^1.5.2"
+dockstring = "^0.3.2"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -20,14 +25,11 @@ pre-commit = "^4.0.0"
 ruff = "^0.6.9"
 mypy = "^1.11.2"
 pytest = "^8.3.3"
+ipykernel = "^6.29.5"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.black]
-line-length = 120
-include = '\.pyi?$'
 
 [tool.mypy]
 python_version = "3.12"    # pin modern python version
@@ -35,17 +37,8 @@ warn_unused_configs = true # fail if mypy finds unused config values
 [tool.ruff]
 line-length = 120
 # Check https://beta.ruff.rs/docs/rules/ for full list of rules
-select = [
-  "E",
-  "W", # pycodestyle
-  "F", # Pyflakes
-  "I", # isort
-]
+[tool.ruff.lint]
 ignore = [
   # W605: invalid escape sequence -- triggered by pseudo-LaTeX in comments
   "W605",
-  # E501: Line too long -- triggered by comments and such. black deals with shortening.
-  "E501",
-  # E741:  Do not use variables named 'l', 'o', or 'i' -- disagree with PEP8
-  "E741",
 ]
