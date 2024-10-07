@@ -3,7 +3,7 @@ import math
 import numpy as np
 import pytest
 
-from acquisition_funcs.hypervolume import Hypervolume
+from gp_mobo.acquisition_funcs.hypervolume import Hypervolume
 
 
 # TODO: austin's test cases
