@@ -1,13 +1,14 @@
+import csv
 import random
-import matplotlib.pyplot as plt
+
 import numpy as np
 import pandas as pd
-import csv
 
-from acquisition_funcs.hypervolume import Hypervolume, infer_reference_point
-from acquisition_funcs.pareto import pareto_front
+from gp_mobo.acquisition_funcs.hypervolume import Hypervolume, infer_reference_point
+from gp_mobo.acquisition_funcs.pareto import pareto_front
 from kern_gp.gp_model import independent_tanimoto_gp_predict
 from utils.utils_final import evaluate_fex_objectives
+
 
 def expected_hypervolume_improvement(pred_means, pred_vars, reference_point, pareto_front, N=1000):
     num_points, num_objectives = pred_means.shape
@@ -34,6 +35,7 @@ def expected_hypervolume_improvement(pred_means, pred_vars, reference_point, par
 
     return ehvi_values
 
+
 def ehvi_acquisition(query_smiles, known_smiles, known_Y, gp_means, gp_amplitudes, gp_noises, reference_point):
     pred_means, pred_vars = independent_tanimoto_gp_predict(
         query_smiles=query_smiles,
@@ -50,6 +52,7 @@ def ehvi_acquisition(query_smiles, known_smiles, known_Y, gp_means, gp_amplitude
     ehvi_values = expected_hypervolume_improvement(pred_means, pred_vars, reference_point, pareto_Y)
 
     return ehvi_values, pred_means
+
 
 def bayesian_optimization_loop(
     known_smiles,
@@ -124,6 +127,7 @@ def bayesian_optimization_loop(
 
     return known_smiles, known_Y, hypervolumes_bo, acquisition_values, results
 
+
 def run_experiment(repeats, n_iterations):
     all_results = []
 
@@ -150,14 +154,16 @@ def run_experiment(repeats, n_iterations):
         gp_noises = np.var(hyperparam_Y, axis=0) * 0.1  # Assume 10% noise level of the variance
 
         # Run Bayesian Optimization Loop
-        known_smiles_bo, known_Y_bo, hypervolumes_bo, acquisition_values_bo, experiment_results = bayesian_optimization_loop(
-            known_smiles=training_smiles.copy(),
-            query_smiles=query_smiles,
-            known_Y=training_Y.copy(),
-            gp_means=gp_means,
-            gp_amplitudes=gp_amplitudes,
-            gp_noises=gp_noises,
-            n_iterations=n_iterations,
+        known_smiles_bo, known_Y_bo, hypervolumes_bo, acquisition_values_bo, experiment_results = (
+            bayesian_optimization_loop(
+                known_smiles=training_smiles.copy(),
+                query_smiles=query_smiles,
+                known_Y=training_Y.copy(),
+                gp_means=gp_means,
+                gp_amplitudes=gp_amplitudes,
+                gp_noises=gp_noises,
+                n_iterations=n_iterations,
+            )
         )
 
         # Append results with experiment number
@@ -167,12 +173,14 @@ def run_experiment(repeats, n_iterations):
 
     return all_results
 
+
 def write_results_to_csv(results, filename):
-    with open(filename, mode='w', newline='') as file:
+    with open(filename, mode="w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(["Experiment", "BO Iteration", "EHVI-MPO-F1", "EHVI-MPO-F2", "EHVI-MPO-F3"])
         for row in results:
             writer.writerow(row)
+
 
 if __name__ == "__main__":
     repeats = 3  # Number of experiments
@@ -182,4 +190,4 @@ if __name__ == "__main__":
     results = run_experiment(repeats, n_iterations)
 
     # Write results to a CSV file
-    write_results_to_csv(results, 'ehvi_bo_experiments_fexofenadine_results.csv')
+    write_results_to_csv(results, "ehvi_bo_experiments_fexofenadine_results.csv")
