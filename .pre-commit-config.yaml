@@ -27,7 +27,7 @@ repos:
       # Run the linter.
       - id: ruff
         types_or: [python, pyi]
-        args: [--fix]
+        args: [--fix,  "--select", "I",]
       # Run the formatter.
       - id: ruff-format
         types_or: [python, pyi]
@@ -36,12 +36,6 @@ repos:
     rev: 0.7.1
     hooks:
       - id: nbstripout
-
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-        name: isort (python)
 
   - repo: local
     hooks:
