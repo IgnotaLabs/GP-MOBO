@@ -22,15 +22,15 @@ repos:
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.5.1
+    rev: v0.6.9
     hooks:
       # Run the linter.
       - id: ruff
-        types_or: [python, pyi, jupyter]
-        args: [--fix, --extend-ignore=E722, E721, E402]
+        types_or: [python, pyi]
+        args: [--fix]
       # Run the formatter.
       - id: ruff-format
-        types_or: [python, pyi, jupyter]
+        types_or: [python, pyi]
 
   - repo: https://github.com/kynan/nbstripout
     rev: 0.7.1
@@ -43,12 +43,12 @@ repos:
       - id: isort
         name: isort (python)
 
-  # - repo: local
-  #   hooks:
-  #     - id: pytest
-  #       name: pytest
-  #       entry: poetry run pytest tests
-  #       language: system
-  #       types: [python]
-  #       pass_filenames: false
-  #       always_run: true
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: poetry run pytest tests
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: true
