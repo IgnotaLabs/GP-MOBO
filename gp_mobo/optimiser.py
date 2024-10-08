@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, List, Literal, Optional, Union
+from typing import Callable, List, Literal, Union
 
 import numpy as np
 

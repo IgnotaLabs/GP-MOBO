@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gp-mobo"
-version = "0.1.0"
+version = "0.0.1"
 description = ""
 authors = ["tClelford <tfjclelford@gmail.com>"]
 readme = "README.md"
@@ -8,16 +8,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 numpy = "1.26.4"
-pandas = "^2.2.3"
-matplotlib = "^3.9.2"
 rdkit = "2023.9.4"
-scipy = "^1.14.1"
-networkx = "^3.3"
-fuzzywuzzy = "^0.18.0"
-requests = "^2.32.3"
-tqdm = "^4.66.5"
 scikit-learn = "^1.5.2"
-dockstring = "^0.3.2"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -26,6 +18,17 @@ ruff = "^0.6.9"
 mypy = "^1.11.2"
 pytest = "^8.3.3"
 ipykernel = "^6.29.5"
+
+[tool.poetry.group.research.dependencies]
+pandas = "^2.2.3"
+matplotlib = "^3.9.2"
+scipy = "^1.14.1"
+networkx = "^3.3"
+fuzzywuzzy = "^0.18.0"
+requests = "^2.32.3"
+tqdm = "^4.66.5"
+dockstring = "^0.3.2"
+
 
 [build-system]
 requires = ["poetry-core"]

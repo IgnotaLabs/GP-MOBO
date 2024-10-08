@@ -1,3 +1,4 @@
+# ruff: noqa
 # -*- coding: utf-8 -*-
 # Author: TDC Team
 # License: MIT
@@ -8,10 +9,10 @@ import pickle
 import time
 from abc import abstractmethod
 from functools import partial
+from importlib import metadata
 from typing import List
 
 import numpy as np
-import pkg_resources
 from packaging import version
 
 try:
@@ -42,7 +43,8 @@ mean2func = {
     "geometric": gmean,
     "arithmetic": np.mean,
 }
-SKLEARN_VERSION = version.parse(pkg_resources.get_distribution("scikit-learn").version)
+# SKLEARN_VERSION = version.parse(pkg_resources.get_distribution("scikit-learn").version)
+SKLEARN_VERSION = version.parse(metadata.version("scikit-learn"))
 
 
 def smiles_to_rdkit_mol(smiles):
@@ -196,7 +198,6 @@ class SquaredModifier(ScoreModifier):
 
     def __call__(self, x):
         return 1.0 - self.coefficient * np.square(self.target_value - x)
-
 
     """
     Score modifier that has a maximum at a given target value, and decreases
@@ -358,6 +359,7 @@ def numBridgeheadsAndSpiro(mol, ri=None):
 
 
 def calculateScore(m):
+    """Scores based on an ECFP classifier for activity."""
     if _fscores is None:
         readFragmentScores()
 
@@ -418,9 +420,6 @@ def calculateScore(m):
         sascore = 1.0
 
     return sascore
-
-
-"""Scores based on an ECFP classifier for activity."""
 
 
 def load_pickled_model(name: str):
@@ -1013,14 +1012,17 @@ def osimertinib_mpo(test_smiles):
     osimertinib_gmean = gmean([tpsa_score, logp_score, similarity_v1, similarity_v2])
     return osimertinib_gmean
 
-"""
-Second MPO objective we are splitting: osimertinib_mpo:
-Split into 4 different functions instead:
-1) sim(osimertinib, FCFC4)
-2) sim(osimertinib, ECFC6)
-2) TPSA
-3) log P
-"""
+
+# """
+# Second MPO objective we are splitting: osimertinib_mpo:
+# Split into 4 different functions instead:
+# 1) sim(osimertinib, FCFC4)
+# 2) sim(osimertinib, ECFC6)
+# 2) TPSA
+# 3) log P
+# """
+
+
 # Individual objective functions
 # Objective 1: TPSA score
 def osimertinib_tpsa_score(test_smiles):
@@ -1029,12 +1031,14 @@ def osimertinib_tpsa_score(test_smiles):
     tpsa_score = tpsa_modifier(Descriptors.TPSA(molecule))
     return tpsa_score
 
+
 # Objective 2: LogP score
 def osimertinib_logp_score(test_smiles):
     logp_modifier = MinGaussianModifier(mu=1, sigma=1)
     molecule = smiles_to_rdkit_mol(test_smiles)
     logp_score = logp_modifier(Descriptors.MolLogP(molecule))
     return logp_score
+
 
 # Objective 3: Similarity score based on FCFP4 fingerprint
 def osimertinib_similarity_v1_score(test_smiles):
@@ -1047,6 +1051,7 @@ def osimertinib_similarity_v1_score(test_smiles):
     fp_fcfc4 = smiles_2_fingerprint_FCFP4(test_smiles)
     similarity_v1 = sim_v1_modifier(DataStructs.TanimotoSimilarity(fp_fcfc4, osimertinib_fp_fcfc4))
     return similarity_v1
+
 
 # Objective 4: Similarity score based on ECFP6 fingerprint
 def osimertinib_similarity_v2_score(test_smiles):
@@ -1080,13 +1085,15 @@ def fexofenadine_mpo(test_smiles):
     return fexofenadine_gmean
 
 
-"""
-First MPO objective we are splitting: fexofenadine_mpo:
-Split into 3 different functions instead:
-1) sim(fexofenandine, AP)
-2) TPSA
-3) log P
-"""
+# """
+# First MPO objective we are splitting: fexofenadine_mpo:
+# Split into 3 different functions instead:
+# 1) sim(fexofenandine, AP)
+# 2) TPSA
+# 3) log P
+# """
+
+
 # Individual objective functions
 def tpsa_score_single(test_smiles):
     tpsa_modifier = MaxGaussianModifier(mu=90, sigma=10)
@@ -1136,14 +1143,16 @@ def ranolazine_mpo(test_smiles):
     ranolazine_gmean = gmean([tpsa_score, logp_score, similarity_value, fluorine_value])
     return ranolazine_gmean
 
-"""
-Third MPO objective we are splitting: ranolazine_mpo:
-Split into 4 different functions instead:
-1)  sim(ranolazine, AP)
-2)  logP
-2)  TPSA
-3)  number of fluorine atoms
-"""
+
+# """
+# Third MPO objective we are splitting: ranolazine_mpo:
+# Split into 4 different functions instead:
+# 1)  sim(ranolazine, AP)
+# 2)  logP
+# 2)  TPSA
+# 3)  number of fluorine atoms
+# """
+
 
 # Objective 1: TPSA score
 def ranolazine_tpsa_score(test_smiles):
@@ -1152,12 +1161,14 @@ def ranolazine_tpsa_score(test_smiles):
     tpsa_score = tpsa_modifier(Descriptors.TPSA(molecule))
     return tpsa_score
 
+
 # Objective 2: LogP score
 def ranolazine_logp_score(test_smiles):
     logp_modifier = MaxGaussianModifier(mu=7, sigma=1)
     molecule = smiles_to_rdkit_mol(test_smiles)
     logp_score = logp_modifier(Descriptors.MolLogP(molecule))
     return logp_score
+
 
 # Objective 3: Similarity score based on AP fingerprint
 def ranolazine_similarity_value(test_smiles):
@@ -1171,6 +1182,7 @@ def ranolazine_similarity_value(test_smiles):
     similarity_value = similar_modifier(DataStructs.TanimotoSimilarity(fp_ap, ranolazine_fp))
     return similarity_value
 
+
 # Objective 4: Fluorine atom count score
 def ranolazine_fluorine_value(test_smiles):
     if "fluorine_counter" not in globals().keys():
@@ -1181,6 +1193,7 @@ def ranolazine_fluorine_value(test_smiles):
     molecule = smiles_to_rdkit_mol(test_smiles)
     fluorine_value = fluorine_modifier(fluorine_counter(molecule))
     return fluorine_value
+
 
 def perindopril_mpo(test_smiles):
     ## no similar_modifier
@@ -1255,7 +1268,12 @@ def zaleplon_mpo(test_smiles):
 
 def sitagliptin_mpo_prev(test_smiles):
     if "sitagliptin_fp_ecfp4" not in globals().keys():
-        global sitagliptin_fp_ecfp4, sitagliptin_logp_modifier, sitagliptin_tpsa_modifier, isomers_scoring_C16H15F6N5O, sitagliptin_similar_modifier
+        global \
+            sitagliptin_fp_ecfp4, \
+            sitagliptin_logp_modifier, \
+            sitagliptin_tpsa_modifier, \
+            isomers_scoring_C16H15F6N5O, \
+            sitagliptin_similar_modifier
         sitagliptin_smiles = "Fc1cc(c(F)cc1F)CC(N)CC(=O)N3Cc2nnc(n2CC3)C(F)(F)F"
         sitagliptin_fp_ecfp4 = smiles_2_fingerprint_ECFP4(sitagliptin_smiles)
         sitagliptin_mol = Chem.MolFromSmiles(sitagliptin_smiles)
@@ -1279,7 +1297,12 @@ def sitagliptin_mpo_prev(test_smiles):
 
 def sitagliptin_mpo(test_smiles):
     if "sitagliptin_fp_ecfp4" not in globals().keys():
-        global sitagliptin_fp_ecfp4, sitagliptin_logp_modifier, sitagliptin_tpsa_modifier, isomers_scoring_C16H15F6N5O, sitagliptin_similar_modifier
+        global \
+            sitagliptin_fp_ecfp4, \
+            sitagliptin_logp_modifier, \
+            sitagliptin_tpsa_modifier, \
+            isomers_scoring_C16H15F6N5O, \
+            sitagliptin_similar_modifier
         sitagliptin_smiles = "Fc1cc(c(F)cc1F)CC(N)CC(=O)N3Cc2nnc(n2CC3)C(F)(F)F"
         sitagliptin_fp_ecfp4 = smiles_2_fingerprint_ECFP4(sitagliptin_smiles)
         sitagliptin_mol = Chem.MolFromSmiles(sitagliptin_smiles)
@@ -1420,29 +1443,29 @@ def valsartan_smarts(test_smiles):
 ###########################################################################
 ###               END of Guacamol
 ###########################################################################
-"""
-Synthesizability from a full retrosynthetic analysis
-Including:
-    1. MIT ASKCOS
-    ASKCOS (https://askcos.mit.edu) is an open-source software
-    framework that integrates efforts to generalize known chemistry
-    to new substrates by learning to apply retrosynthetic transformations,
-    to identify suitable reaction conditions, and to evaluate whether
-    reactions are likely to be successful. The data-driven models are trained
-    with USPTO and Reaxys databases.
+# """
+# Synthesizability from a full retrosynthetic analysis
+# Including:
+#     1. MIT ASKCOS
+#     ASKCOS (https://askcos.mit.edu) is an open-source software
+#     framework that integrates efforts to generalize known chemistry
+#     to new substrates by learning to apply retrosynthetic transformations,
+#     to identify suitable reaction conditions, and to evaluate whether
+#     reactions are likely to be successful. The data-driven models are trained
+#     with USPTO and Reaxys databases.
 
-    Reference:
-    https://doi.org/10.1021/acs.jcim.0c00174
+#     Reference:
+#     https://doi.org/10.1021/acs.jcim.0c00174
 
-    2. IBM_RXN
-    IBM RXN (https://rxn.res.ibm.com) is an AI platform integarting
-    forward reaction prediction and retrosynthetic analysis. The
-    backend of the IBM RXN retrosynthetic analysis is Molecular
-    Transformer model (see reference). The model was mainly trained
-    with USPTO, Pistachio databases.
-    Reference:
-    https://doi.org/10.1021/acscentsci.9b00576
-"""
+#     2. IBM_RXN
+#     IBM RXN (https://rxn.res.ibm.com) is an AI platform integarting
+#     forward reaction prediction and retrosynthetic analysis. The
+#     backend of the IBM RXN retrosynthetic analysis is Molecular
+#     Transformer model (see reference). The model was mainly trained
+#     with USPTO, Pistachio databases.
+#     Reference:
+#     https://doi.org/10.1021/acscentsci.9b00576
+# """
 
 
 def tree_analysis(current):

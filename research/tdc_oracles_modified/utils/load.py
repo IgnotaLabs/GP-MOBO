@@ -1,5 +1,6 @@
-"""wrapper for download various dataset
-"""
+# ruff: noqa
+
+"""wrapper for download various dataset"""
 
 import os
 import pickle
