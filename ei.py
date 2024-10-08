@@ -132,8 +132,8 @@ if __name__ == "__main__":
     query_smiles = ALL_SMILES[20:10_000]
 
     # Calculate objectives for training smiles
-    hyperparam_Y = evaluate_FEX_MPO(hyperparam_smiles)
-    training_Y = evaluate_FEX_MPO(training_smiles)
+    hyperparam_Y = evaluate_fex_MPO(hyperparam_smiles)
+    training_Y = evaluate_fex_MPO(training_smiles)
 
     # Calculate GP hyperparameters from the training set
     gp_means = np.mean(hyperparam_Y, axis=0)

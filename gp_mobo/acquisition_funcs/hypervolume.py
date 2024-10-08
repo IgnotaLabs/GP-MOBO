@@ -5,6 +5,8 @@ Adapted from:
 
 """
 
+from typing import Optional
+
 import numpy as np
 
 # Constants
@@ -13,10 +15,10 @@ MIN_Y_RANGE = 1e-7
 
 # Hypervolume class to calculate the hypervolume
 class Hypervolume:
-    def __init__(self, ref_point):
+    def __init__(self, ref_point: np.ndarray):
         self.ref_point = -ref_point
 
-    def compute(self, pareto_Y):
+    def compute(self, pareto_Y: np.ndarray) -> float:
         if pareto_Y.shape[-1] != self.ref_point.shape[0]:
             raise ValueError("pareto_Y must have the same number of objectives as ref_point.")
         if pareto_Y.ndim != 2:
@@ -160,8 +162,13 @@ class MultiList:
 
 
 # Function to infer the reference point
-def infer_reference_point(pareto_Y, max_ref_point=None, scale=0.1, scale_max_ref_point=False):
+def infer_reference_point(
+    pareto_Y: np.ndarray, max_ref_point=Optional[np.ndarray], scale=0.1, scale_max_ref_point=False
+) -> np.ndarray:
     """
+    Get reference point for hypervolume computations
+
+
     1) Compute a suitable reference point for hypervolume calculations,
     handling edge cases such as empty Pareto sets and presence of NaN values.
     2) This is same function as the one in the Botorch implementation but we are not using torch functions like
