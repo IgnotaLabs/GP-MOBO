@@ -8,7 +8,9 @@ from gp_mobo.kern_gp.kern_gp_matrices import noiseless_predict
 def get_fingerprint(smiles: str):
     mol = Chem.MolFromSmiles(smiles)
     assert mol is not None
-    return AllChem.GetMorganFingerprint(mol, radius=3, useCounts=True)
+    return AllChem.GetMorganFingerprint(
+        mol, radius=3, useCounts=True
+    )  # ExplicitBitVect but the rdkit exports are a mess.
 
 
 def independent_tanimoto_gp_predict(
@@ -20,9 +22,25 @@ def independent_tanimoto_gp_predict(
     gp_amplitudes: np.ndarray,  # shape K
     gp_noises: np.ndarray,  # shape K
 ) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Make *independent* predictions on a set of query smiles with the
+    independent Tanimoto GP model.
+
+    Return two arrays A and B with shape (M,K)
+    such that A[i,j] is the predicted mean for query_smiles[i]
+    on objective j
+    and B[i,j] is the predicted variance for query_smiles[i]
+    on objective j.
+
+    gp_means, gp_amplitudes, and gp_noises
+    are the model hyperparameters.
+
+    NOTE: this method can likely be made much more efficient if covariance matrices are cached
+    (i.e. calculated once and then passed in). If you change this in the future, this method
+    could be a helpful reference.
+    """
+
     for hparam_arr in (gp_means, gp_amplitudes, gp_noises):
-        # print("hparam_arr.shape", hparam_arr.shape)
-        # print("known_Y.shape", known_Y.shape[1])
         assert hparam_arr.shape == (known_Y.shape[1],)
 
     known_fp = [get_fingerprint(s) for s in known_smiles]
