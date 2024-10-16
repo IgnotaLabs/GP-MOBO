@@ -4,20 +4,22 @@ from scipy import stats
 from gp_mobo.acquisition_funcs.hypervolume import Hypervolume
 
 
-def expected_improvement(pred_means: np.ndarray, pred_vars: np.ndarray, y_best: float) -> np.ndarray:
+def expected_improvement(predicted_means: np.ndarray, predicted_variances: np.ndarray, y_best: float) -> np.ndarray:
     """
     Calculate the expected improvement of a set of predictions.
     Args:
-        pred_means: The predicted means of the model.
-        pred_vars: The predicted variances of the model.
+        predicted_means: The predicted means of the model.
+        predicted_variances: The predicted variances of the model.
         y_best: The best value observed so far.
 
     Returns:
         np.ndarray: The expected improvement of the predictions.
     """
-    std = np.sqrt(pred_vars)
-    z = (pred_means - y_best) / std
-    ei = (pred_means - y_best) * stats.norm.cdf(z) + std * stats.norm.pdf(z)
+    cleaned_variences = np.maximum(predicted_variances, 1e-30)
+    std = np.sqrt(cleaned_variences)
+
+    z = (predicted_means - y_best) / std
+    ei = (predicted_means - y_best) * stats.norm.cdf(z) + std * stats.norm.pdf(z)
     return np.maximum(ei, 1e-30)
 
 
