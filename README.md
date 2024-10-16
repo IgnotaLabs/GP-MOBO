@@ -1,3 +1,5 @@
+[![python](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org) 
+[![CI](https://github.com/IgnotaLabs/GP-MOBO/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/IgnotaLabs/GP-MOBO/actions/workflows/ci.yml)
 # Multi-Objective Bayesian Optimization with Independent Tanimoto Kernel Gaussian Processes for Diverse Pareto Front Exploration (README.md in construction)
 
 GP-MOBO is a novel multi-objective Bayesian Optimization (MOBO) algorithm designed to optimize molecular properties using Gaussian Processes (GPs). Leveraging independent Tanimoto kernel GPs for each molecular objective, the model effectively explores the Pareto frontier, balancing exploration and exploitation to identify high-quality, diverse candidate molecules.
