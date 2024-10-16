@@ -1,9 +1,10 @@
-#creating objective functions SEPARATELY for 3 different MPOs: fexofenadine, ranolazine, and osimertinib objectives
+# creating objective functions SEPARATELY for 3 different MPOs: fexofenadine, ranolazine, and osimertinib objectives
 from pprint import pprint
 
 import numpy as np
 import pandas as pd
 
+from gp_mobo.optimiser import evaluate_objectives
 from tdc_oracles_modified import Oracle
 
 # Load GuacaMol dataset
@@ -33,126 +34,42 @@ RANOL_FLUORINE_ORACLE = Oracle("ranolazine_fluorine_value")
 
 # 1st MPOs to investigate as baseline
 FEXOFENADINE_MPO_ORACLE = Oracle("fexofenadine_mpo")
-#2nd and 3rd MPO to investigate as baseline
+# 2nd and 3rd MPO to investigate as baseline
 OSIMERTINIB_MPO_ORACLE = Oracle("osimertinib_mpo")
 RANOLAZINE_MPO_ORACLE = Oracle("ranolazine_mpo")
 
 
 def evaluate_fex_objectives(smiles_list: list[str]) -> np.ndarray:
-    # Initialize arrays for each objective
-    f1 = np.array(TPSA_ORACLE(smiles_list))
-    f2 = np.array(LOGP_ORACLE(smiles_list))
-    f3 = np.array(FEXOFENADINE_SIM_ORACLE(smiles_list))
+    return evaluate_objectives(smiles_list, [TPSA_ORACLE, LOGP_ORACLE, FEXOFENADINE_SIM_ORACLE])
 
-    print(f"f1 shape: {f1.shape}")
-    print(f"f2 shape: {f2.shape}")
-    print(f"f3 shape: {f3.shape}")
-
-    # Filter out NaN values from f1 and corresponding entries in other arrays
-    valid_indices = ~np.isnan(f1)
-    f1 = f1[valid_indices]
-    f2 = f2[valid_indices]
-    f3 = f3[valid_indices]
-
-    # Ensure all arrays have the same shape
-    if not (len(f1) == len(f2) == len(f3)):
-        raise ValueError("All input arrays must have the same shape")
-
-    out = np.stack([f1, f2, f3])  # 4x3
-    return out.T  # transpose, Nx3
 
 def evaluate_osim_objectives(smiles_list: list[str]) -> np.ndarray:
-    # Initialize arrays for each objective
-    f1 = np.array(OSIM_TPSA_ORACLE(smiles_list))
-    f2 = np.array(OSIM_LOGP_ORACLE(smiles_list))
-    f3 = np.array(OSIM_SIM_V1_ORACLE(smiles_list))
-    f4 = np.array(OSIM_SIM_V2_ORACLE(smiles_list))
+    return evaluate_objectives(
+        smiles_list, [OSIM_TPSA_ORACLE, OSIM_LOGP_ORACLE, OSIM_SIM_V1_ORACLE, OSIM_SIM_V2_ORACLE]
+    )
 
-
-    print(f"f1 shape: {f1.shape}")
-    print(f"f2 shape: {f2.shape}")
-    print(f"f3 shape: {f3.shape}")
-    print(f"f4 shape: {f3.shape}")
-
-    # Filter out NaN values from f1 and corresponding entries in other arrays
-    valid_indices = ~np.isnan(f1)
-    f1 = f1[valid_indices]
-    f2 = f2[valid_indices]
-    f3 = f3[valid_indices]
-    f4 = f4[valid_indices]
-
-    # Ensure all arrays have the same shape
-    if not (len(f1) == len(f2) == len(f3) == len(f4)):
-        raise ValueError("All input arrays must have the same shape")
-
-    out = np.stack([f1, f2, f3, f4])  
-    return out.T  # transpose, Nx4
 
 def evaluate_ranol_objectives(smiles_list: list[str]) -> np.ndarray:
-    # Initialize arrays for each objective
-    f1 = np.array(RANOL_TPSA_ORACLE(smiles_list))
-    f2 = np.array(RANOL_LOGP_ORACLE(smiles_list))
-    f3 = np.array(RANOL_SIM_ORACLE(smiles_list))
-    f4 = np.array(RANOL_FLUORINE_ORACLE(smiles_list))
+    return evaluate_objectives(
+        smiles_list, [RANOL_TPSA_ORACLE, RANOL_LOGP_ORACLE, RANOL_SIM_ORACLE, RANOL_FLUORINE_ORACLE]
+    )
 
-    print(f"f1 shape: {f1.shape}")
-    print(f"f2 shape: {f2.shape}")
-    print(f"f3 shape: {f3.shape}")
-    print(f"f4 shape: {f3.shape}")
 
-    # Filter out NaN values from f1 and corresponding entries in other arrays
-    valid_indices = ~np.isnan(f1)
-    f1 = f1[valid_indices]
-    f2 = f2[valid_indices]
-    f3 = f3[valid_indices]
-    f4 = f4[valid_indices]
+# """
+# SINGLE MPO OBJECTIVES <- objectives are not separated here:
+# 1) fexofenadine MPO
+# 2) ranolazine MPO
+# 3) osimertinib MPO
+# """
 
-    # Ensure all arrays have the same shape
-    if not (len(f1) == len(f2) == len(f3) == len(f4)):
-        raise ValueError("All input arrays must have the same shape")
 
-    out = np.stack([f1, f2, f3, f4])  
-    return out.T  # transpose, Nx4
-
-"""
-SINGLE MPO OBJECTIVES <- objectives are not separated here: 
-1) fexofenadine MPO 
-2) ranolazine MPO 
-3) osimertinib MPO 
-"""
 def evaluate_fex_MPO(smiles_list: list[str]) -> np.ndarray:
-    f1 = np.array(FEXOFENADINE_MPO_ORACLE(smiles_list))
-    print(f"f1 shape: {f1.shape}")
+    return evaluate_objectives(smiles_list, [FEXOFENADINE_MPO_ORACLE])
 
-    # Filter out NaN values from f1 and corresponding entries in other arrays
-    valid_indices = ~np.isnan(f1)
-    f1 = f1[valid_indices]
-
-    out = np.stack([f1])  # Nx1
-    return out.T  # transpose, Nx1
 
 def evaluate_ranol_MPO(smiles_list: list[str]) -> np.ndarray:
-    f1 = np.array(RANOLAZINE_MPO_ORACLE(smiles_list))
-    print(f"f1 shape: {f1.shape}")
+    return evaluate_objectives(smiles_list, [RANOLAZINE_MPO_ORACLE])
 
-    # Filter out NaN values from f1 and corresponding entries in other arrays
-    valid_indices = ~np.isnan(f1)
-    f1 = f1[valid_indices]
-
-    out = np.stack([f1])  # Nx1
-    return out.T  # transpose, Nx1
 
 def evaluate_osim_MPO(smiles_list: list[str]) -> np.ndarray:
-    f1 = np.array(OSIMERTINIB_MPO_ORACLE(smiles_list))
-    print(f"f1 shape: {f1.shape}")
-
-    # Filter out NaN values from f1 and corresponding entries in other arrays
-    valid_indices = ~np.isnan(f1)
-    f1 = f1[valid_indices]
-
-    out = np.stack([f1])  # Nx1
-    return out.T  # transpose, Nx1
-
-#known_Y = evaluate_ranol_objectives(known_smiles)
-#print(f"Known Y shape: {known_Y.shape}")
-#print(known_Y)
+    return evaluate_objectives(smiles_list, [OSIMERTINIB_MPO_ORACLE])

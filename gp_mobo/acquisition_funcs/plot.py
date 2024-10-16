@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+# TODO - this seems pointless. Review and remove
 # Given points
 points = np.array([[8.5, 3.0], [8.5, 3.5], [5.0, 5.0], [9.0, 1.0], [4.0, 5.0]])
 reference_point = [0.0, 0.0]
