@@ -1,5 +1,4 @@
-"""miscellaneous utilities functions
-"""
+"""miscellaneous utilities functions"""
 
 import pickle
 import subprocess

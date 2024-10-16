@@ -3,11 +3,11 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from utils.utils_final import evaluate_fex_objectives
 
 from gp_mobo.acquisition_funcs.hypervolume import Hypervolume, infer_reference_point
 from gp_mobo.acquisition_funcs.pareto import pareto_front
 from gp_mobo.kern_gp.gp_model import independent_tanimoto_gp_predict
-from utils.utils_final import evaluate_fex_objectives
 
 
 def expected_hypervolume_improvement(pred_means, pred_vars, reference_point, pareto_front, N=1000):

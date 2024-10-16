@@ -23,7 +23,7 @@ Attributes:
     ddi_dataset_names (list): all ddi dataset names
     develop_dataset_names (list): all develop dataset names
     distribution_oracles (list): all distribution learning oracles, i.e. molecule evaluators
-	docking_oracles (list): all docking oracles, i.e. RMSD
+        docking_oracles (list): all docking oracles, i.e. RMSD
     docking_benchmark (dict): docking benchmark target names
     docking_target_info (dict): docking benchmark target pockets info
     download_oracle_names (list): oracle names that require downloading predictors
@@ -62,7 +62,7 @@ Attributes:
     retrosyn_dataset_names (list): all retrosyn dataset names
     sdf_file_names (list): list of sdf file names
     single_molecule_dataset_names (list): all molgen dataset names
-	multiple_molecule_dataset_names (list): all ligandmolgen dataset names
+        multiple_molecule_dataset_names (list): all ligandmolgen dataset names
     synthetic_oracle_name (list): all oracle names for synthesis
     test_multi_pred_dataset_names (list): test multi pred task name
     test_single_pred_dataset_names (list): test single pred task name
@@ -70,6 +70,7 @@ Attributes:
     trivial_oracle_names (list): a list of oracle names for trivial oracles
     yield_dataset_names (list): all yield dataset names
 """
+
 ####################################
 # test cases
 test_single_pred_dataset_names = ["test_single_pred"]

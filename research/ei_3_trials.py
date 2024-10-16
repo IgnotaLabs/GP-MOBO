@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy import stats
+from utils.utils_final import evaluate_fex_MPO
 
 from gp_mobo.kern_gp.gp_model import independent_tanimoto_gp_predict
-from utils.utils_final import evaluate_fex_MPO
 
 
 def expected_improvement(pred_means: np.array, pred_vars: np.array, y_best: float) -> np.array:

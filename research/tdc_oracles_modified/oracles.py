@@ -1,7 +1,8 @@
+# ruff: noqa
 import warnings
+from importlib import metadata
 
 import numpy as np
-import pkg_resources
 from packaging import version
 
 warnings.filterwarnings("ignore")
@@ -17,7 +18,7 @@ from tdc_oracles_modified.metadata import (
 from tdc_oracles_modified.utils.load import oracle_load, receptor_load
 from tdc_oracles_modified.utils.misc import fuzzy_search
 
-SKLEARN_VERSION = version.parse(pkg_resources.get_distribution("scikit-learn").version)
+SKLEARN_VERSION = version.parse(metadata.version("scikit-learn"))
 
 
 def _normalize_docking_score(raw_score):
@@ -100,17 +101,17 @@ class Oracle:
             from .chem_utils import osimertinib_tpsa_score
 
             self.evaluator_func = osimertinib_tpsa_score
-        
+
         elif self.name == "osimertinib_logp_score":
             from .chem_utils import osimertinib_logp_score
 
             self.evaluator_func = osimertinib_logp_score
-        
+
         elif self.name == "osimertinib_similarity_v1_score":
             from .chem_utils import osimertinib_similarity_v1_score
 
             self.evaluator_func = osimertinib_similarity_v1_score
-        
+
         elif self.name == "osimertinib_similarity_v2_score":
             from .chem_utils import osimertinib_similarity_v2_score
 
@@ -120,17 +121,17 @@ class Oracle:
             from .chem_utils import ranolazine_tpsa_score
 
             self.evaluator_func = ranolazine_tpsa_score
-        
+
         elif self.name == "ranolazine_logp_score":
             from .chem_utils import ranolazine_logp_score
 
             self.evaluator_func = ranolazine_logp_score
-        
+
         elif self.name == "ranolazine_similarity_value":
             from .chem_utils import ranolazine_similarity_value
 
             self.evaluator_func = ranolazine_similarity_value
-        
+
         elif self.name == "ranolazine_fluorine_value":
             from .chem_utils import ranolazine_fluorine_value
 

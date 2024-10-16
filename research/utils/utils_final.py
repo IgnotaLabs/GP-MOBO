@@ -3,9 +3,9 @@ from pprint import pprint
 
 import numpy as np
 import pandas as pd
+from tdc_oracles_modified import Oracle
 
 from gp_mobo.optimiser import evaluate_objectives
-from tdc_oracles_modified import Oracle
 
 # Load GuacaMol dataset
 guacamol_dataset_path = "guacamol_dataset/guacamol_v1_train.smiles"
