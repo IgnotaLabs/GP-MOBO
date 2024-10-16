@@ -40,7 +40,7 @@ def ehvi_acquisition(
     return ehvi_values
 
 
-def evaluate_objectives(smiles_list: list[str], oracles: List[ORACLE_LIKE]) -> np.ndarray:
+def evaluate_objectives(smiles_list: list[str], objective_functions: List[ORACLE_LIKE]) -> np.ndarray:
     """
     Evaluate the objectives for a list of smiles.
 
@@ -49,11 +49,15 @@ def evaluate_objectives(smiles_list: list[str], oracles: List[ORACLE_LIKE]) -> n
 
     """
     # Initialise arrays for each objective
-    predictions = [np.array(oracle(smiles_list)) for oracle in oracles]
+    predictions = [np.array(predictor(smiles_list)) for predictor in objective_functions]
+    valid_indices = np.array([True] * len(smiles_list))
+
+    for prediction in predictions:
+        valid_indices = valid_indices & ~np.isnan(prediction)
 
     # Filter out NaN values from f1 and corresponding entries in other arrays
-    f1 = predictions[0]
-    valid_indices = ~np.isnan(f1)
+    f1 = predictions[0][valid_indices]
+
     predictions = [prediction[valid_indices] for prediction in predictions]
 
     # Ensure all arrays have the same shape

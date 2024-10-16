@@ -1,8 +1,11 @@
 [tool.poetry]
 name = "gp-mobo"
 version = "0.0.1"
-description = ""
-authors = ["tClelford <tfjclelford@gmail.com>"]
+
+description = "Multi-objective Bayesian optimization with Gaussian processes"
+authors = [
+  "Anabel Yong <bananabelyong> Austin Tripp <austintripp> Tom Clelford <thomas.clelford@ignotalabs.ai>",
+]
 readme = "README.md"
 
 [tool.poetry.dependencies]
