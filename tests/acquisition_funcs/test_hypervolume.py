@@ -6,6 +6,54 @@ import pytest
 from gp_mobo.acquisition_funcs.hypervolume import Hypervolume
 
 
+@pytest.mark.parametrize(
+    "reference, points, expected",
+    [
+        (np.zeros((2,)), np.array([[1, 2]]), 2.0),
+        (np.zeros((2,)), np.array([[3, 4]]), 12.0),
+        (np.array([1, 1]), np.array([[3, 4]]), 6.0),
+    ],
+)
+def test_single_points(reference, points, expected):
+    run_test_case(reference, points, expected)
+
+
+@pytest.mark.parametrize(
+    "reference, points, expected",
+    [
+        (np.zeros((2,)), np.array([[1, 2], [2, 1]]), 3.0),
+        (np.zeros((2,)), np.array([[10, 9], [9, 10]]), 99.0),
+    ],
+)
+def test_2d_cases(reference, points, expected):
+    run_test_case(reference, points, expected)
+
+
+@pytest.mark.parametrize(
+    "reference, points, expected",
+    [
+        (np.zeros((3,)), np.array([[1, 2, 1], [2, 1, 1], [1, 1, 2]]), 4.0),
+        # (np.zeros((3,)), np.array([[3, 4, 5], [5, 3, 4], [4, 5, 3]]), 60.0), # This test case is failing
+    ],
+)
+def test_3d_cases(reference, points, expected):
+    run_test_case(reference, points, expected)
+
+
+def run_test_case(reference: np.ndarray, points: np.ndarray, expected: float):
+    rng = np.random.default_rng(seed=1234)
+    output_sampling = estimate_hypervolume_via_sampling(reference=reference, points=points, rng=rng)
+
+    hv = Hypervolume(reference)
+    output_hypervolume = hv.compute(points)
+
+    print(f"Reference: {reference}, Points: {points}")
+    print(f"Expected: {expected}, Sampling Output: {output_sampling}, Hypervolume Output: {output_hypervolume}")
+
+    assert math.isclose(output_sampling, expected, rel_tol=1e-2), f"Sampling: {output_sampling} vs {expected}"
+    assert math.isclose(output_hypervolume, expected, rel_tol=1e-2), f"Hypervolume: {output_hypervolume} vs {expected}"
+
+
 # TODO: austin's test cases
 def estimate_hypervolume_via_sampling(
     reference: np.ndarray,  # shape D
@@ -49,51 +97,3 @@ def estimate_hypervolume_via_sampling(
 
     # Our volume estimate is (fraction of points in the hyperrectangle) * (volume of hyperrectangle)
     return (n_samples_in_hypervolume / n_sample) * float(np.prod(rectangle_dims))
-
-
-def run_test_case(reference, points, expected):
-    rng = np.random.default_rng(seed=1234)
-    output_sampling = estimate_hypervolume_via_sampling(reference=reference, points=points, rng=rng)
-
-    hv = Hypervolume(reference)
-    output_hypervolume = hv.compute(points)
-
-    print(f"Reference: {reference}, Points: {points}")
-    print(f"Expected: {expected}, Sampling Output: {output_sampling}, Hypervolume Output: {output_hypervolume}")
-
-    assert math.isclose(output_sampling, expected, rel_tol=1e-2), f"Sampling: {output_sampling} vs {expected}"
-    assert math.isclose(output_hypervolume, expected, rel_tol=1e-2), f"Hypervolume: {output_hypervolume} vs {expected}"
-
-
-@pytest.mark.parametrize(
-    "reference, points, expected",
-    [
-        (np.zeros((2,)), np.array([[1, 2]]), 2.0),
-        (np.zeros((2,)), np.array([[3, 4]]), 12.0),
-        (np.array([1, 1]), np.array([[3, 4]]), 6.0),
-    ],
-)
-def test_single_points(reference, points, expected):
-    run_test_case(reference, points, expected)
-
-
-@pytest.mark.parametrize(
-    "reference, points, expected",
-    [
-        (np.zeros((2,)), np.array([[1, 2], [2, 1]]), 3.0),
-        (np.zeros((2,)), np.array([[10, 9], [9, 10]]), 99.0),
-    ],
-)
-def test_2d_cases(reference, points, expected):
-    run_test_case(reference, points, expected)
-
-
-@pytest.mark.parametrize(
-    "reference, points, expected",
-    [
-        (np.zeros((3,)), np.array([[1, 2, 1], [2, 1, 1], [1, 1, 2]]), 4.0),
-        # (np.zeros((3,)), np.array([[3, 4, 5], [5, 3, 4], [4, 5, 3]]), 60.0), # This test case is failing
-    ],
-)
-def test_3d_cases(reference, points, expected):
-    run_test_case(reference, points, expected)
